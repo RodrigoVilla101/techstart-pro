@@ -488,42 +488,44 @@
         </section>
         <!-- sección de boletín fin -->
     
-        <!-- sección de contacto inicio -->
-        <section class="d2c_contact_wrapper" id="contact">
-            <div class="container">
-                <h3 class="d2c_sub_title position-relative">Contáct<span>anos</span></h3>
-                <h2>¿Tienes alguna <span>pregunta o consulta?</span></h2>
-                <form class="row needs-validation" novalidate>
-                    <div class="col-md-6">
-                        <label for="validationCustomFirstName" class="form-label">Primer <span>Nombre</span></label>
-                        <input type="text" class="form-control" id="validationCustomFirstName" autocomplete="off" required>
+        <!-- Sección de Contacto Actualizada -->
+<section class="d2c_contact_wrapper" id="contact">
+        <div class="container">
+            <h3 class="d2c_sub_title position-relative">Contáct<span>anos</span></h3>
+            <h2>¿Tienes alguna <span>pregunta o inquietud?</span></h2>
+
+            <form id="formContacto" class="row needs-validation" novalidate>
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label">Primer <span>Nombre</span></label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" required>
+                    <div class="invalid-feedback">Por favor ingresa tu apellido.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Dirección de <span>Correo</span></label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="telefono" class="form-label">Número de <span>Teléfono</span></label>
+                    <input type="tel" class="form-control" id="telefono" name="telefono">
                     </div>
-                    <div class="col-md-6">
-                        <label for="validationCustomLastName" class="form-label">Apellido</label>
-                        <input type="text" class="form-control" id="validationCustomLastName" autocomplete="off" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="validationCustomEmail" class="form-label">Dirección de <span>Correo</span></label>
-                        <div class="input-group has-validation">
-                            <input type="email" class="form-control" id="validationCustomEmail" autocomplete="on" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="validationCustomPhone" class="form-label">Número de <span>Teléfono</span></label>
-                        <div class="input-group has-validation">
-                            <input type="tel" class="form-control" id="validationCustomPhone" autocomplete="off" required>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <label for="validationCustomMessage" class="form-label">Mensajes</label>
-                        <textarea class="form-control" rows="5" id="validationCustomMessage" required></textarea>
-                    </div>
-                    <div class="col-12">
-                        <button class="btn" type="submit">Enviar Mensaje</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                <div class="col-md-12">
+                    <label for="mensaje" class="form-label">Mensaje</label>
+                    <textarea class="form-control" rows="5" id="mensaje" name="mensaje" required></textarea>
+                    <div class="invalid-feedback">Por favor escribe tu mensaje.</div>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn">Enviar Mensaje</button>
+                </div>
+                <div id="form-message" class="form-message mt-3"></div>
+            </form>
+        </div>
+    </section>
         <!-- sección de contacto fin -->
     
         <!-- sección de pie de página inicio -->
@@ -620,7 +622,76 @@
     </main>
     
 
-    
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function () {
+            'use strict'
+
+            // Obtener el formulario y el elemento del mensaje
+            var form = document.getElementById('formContacto');
+            var formMessage = document.getElementById('form-message');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // Evita el envío tradicional del formulario
+                event.stopPropagation();
+
+                form.classList.add('was-validated'); // Aplica las clases de validación de Bootstrap
+
+                if (form.checkValidity()) {
+                    // Si el formulario es válido, procede con el envío AJAX
+                    sendFormData();
+                } else {
+                    // Si no es válido, asegúrate de que el mensaje de estado no se muestre
+                    formMessage.style.display = 'none';
+                }
+            }, false);
+
+            function sendFormData() {
+                const formData = new FormData(form);
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('POST', 'procesar_formulario.php', true); // Apunta a tu script PHP
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                formMessage.textContent = response.message;
+                                formMessage.className = 'form-message mt-3 success';
+                                form.reset(); // Limpia el formulario
+                                form.classList.remove('was-validated'); // Quita las clases de validación
+                            } else {
+                                formMessage.textContent = response.message || 'Hubo un error al enviar tu mensaje. Inténtalo de nuevo.';
+                                formMessage.className = 'form-message mt-3 error';
+                            }
+                        } catch (e) {
+                            formMessage.textContent = 'Error en la respuesta del servidor. Inténtalo de nuevo.';
+                            formMessage.className = 'form-message mt-3 error';
+                            console.error('Error al parsear JSON:', e, xhr.responseText);
+                        }
+                    } else {
+                        formMessage.textContent = 'Error de conexión al servidor. Código: ' + xhr.status;
+                        formMessage.className = 'form-message mt-3 error';
+                    }
+                    formMessage.style.display = 'block'; // Muestra el mensaje
+                };
+
+                xhr.onerror = function() {
+                    formMessage.textContent = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+                    formMessage.className = 'form-message mt-3 error';
+                    formMessage.style.display = 'block'; // Muestra el mensaje
+                };
+
+                xhr.send(formData);
+            }
+        })();
+    </script>
+
+
+</script>
+    </script>
     <!-- js cdn -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- bootstrap js -->
