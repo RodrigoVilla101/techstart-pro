@@ -205,10 +205,3 @@ function scrollFunction() {
 }
 
 
-
-// Template Name: {{Tech Start Pro}}
-// Template URL: {{https://www.designtocodes.com/product/techstart-pro-responsive-bootstrap-landing-page/}}
-// Description: {{TechStart Pro landing page is the definitive solution for businesses and individuals seeking a top-tier online presence. This responsive Bootstrap landing page is not just good-looking, it's also simple.}}
-// Author: DesignToCodes
-// Author URL: https://www.designtocodes.com
-// Text Domain: {{ Tech Start Pro }}
