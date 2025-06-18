@@ -1,10 +1,11 @@
 <?php
-header('Content-Type: application/json'); // Indica que la respuesta será JSON
+header('Content-Type: application/json'); 
+
 
 // Configuración de la base de datos
 $servername = "localhost";
-$username = "tu_usuario_mysql"; // <-- CAMBIA ESTO
-$password = "tu_contraseña_mysql"; // <-- CAMBIA ESTO
+$username = "root"; 
+$password = ""; 
 $dbname = "techstart_db";
 
 // Inicializar la respuesta
