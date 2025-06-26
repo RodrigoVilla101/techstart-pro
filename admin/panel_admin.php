@@ -55,7 +55,7 @@ if ($conn->connect_error) {
     <link rel="stylesheet" href="../assets/css/responsive.css">
     <link rel="stylesheet" href="../lib/bootstrap-5/css/bootstrap.min.css">
     <style>
-        /* Tus estilos originales se mantienen intactos */
+       
         body {
             background-color: #121820;
         }
