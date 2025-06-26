@@ -44,7 +44,7 @@
             <!-- barra de navegación -->
             <nav class="navbar navbar-expand-lg px-0 py-0" id="d2c_main_nav">
                 <!-- logo -->
-                <a class="navbar-brand" href="./index.html"><img src="./assets/images/logo.png" class="w-100" alt="Logo"></a>
+                <a class="navbar-brand" href="./index.php"><img src="./assets/images/logo.png" class="w-100" alt="Logo"></a>
                 <!-- logo -->
                 <!-- hamburguesa -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,12 +75,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#testimonial">testimonios</a>
                         </li>
+                        
                         <li class="nav-item">
                             <a href="#contact" class="btn d-block d-lg-none">Contáctanos</a>
                         </li>
+                        
                     </ul>
                 </div>
-                <a href="#contact" class="btn d-none d-lg-block">Contáctanos</a>
+                <a href="http://localhost/TECHSTART-PRO/admin/admin.html" class="btn d-none d-lg-block">ADMINISTRACION</a>
                 <!-- elementos de navegación -->
             </nav>
             <!-- barra de navegación -->
@@ -384,47 +386,64 @@
             <!-- sección de portafolio fin -->
         </div>
     
-        <div class="d2c_blog_bg_wrapper">
-            <!-- sección de blog inicio -->
-            <section class="d2c_blog_wrapper" id="blog">
-                <div class="container">
-                    <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestro <span>Blog</span></h3>
-                    <h2 class="d2c_title text_start text-md-center position-relative">Últimas noticias y <span>artículos</span></h2>
-                    <p class="text_start text-md-center">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas. Mantente informado y amplía tu conocimiento tecnológico con nuestro contenido perspicaz.</p>
-                    <div class="row">
+<section class="d2c_blog_wrapper" id="blog">
+    <div class="container">
+        <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestro <span>Blog</span></h3>
+        <h2 class="d2c_title text_start text-md-center position-relative">Últimas noticias y <span>artículos</span></h2>
+        <p class="text_start text-md-center">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas. Mantente informado y amplía tu conocimiento tecnológico con nuestro contenido perspicaz.</p>
+        <div class="row">
+          
+<?php
+  
+            // Configuración de la base de datos
+            $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "techstart_db";
+            
+            // Crear conexión
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            // Verificar conexión
+            if ($conn->connect_error) {
+                // Si hay un error, muestra un mensaje de error o los blogs estáticos
+                echo '<div class="col-12"><p class="text-center text-danger">Error al cargar el blog. Por favor, inténtalo de nuevo más tarde.</p></div>';
+            } else {
+                // Consulta para obtener los blogs (puedes limitar la cantidad si quieres, por ejemplo, LIMIT 2)
+                $sql = "SELECT id, categoria, titulo, descripcion, imagen_url, fecha, enlace_url FROM blogs ORDER BY fecha DESC";
+                $result = $conn->query($sql);
+
+                if ($result && $result->num_rows > 0) {
+                    while($blog = $result->fetch_assoc()) {
+                        // Formatear la fecha
+                        $fecha_formateada = date('j, M Y', strtotime($blog['fecha']));
+                        // Muestra el código HTML para cada blog
+                        echo '
                         <div class="col-lg-6 mb-4 mb-lg-0">
                             <div class="d2c_card_wrapper d2c_blog_card">
-                                <img src="./assets/images/blog_one.jpg" class="img-fluid w-100" alt="Imagen de Blog Uno">
+                                <img src="' . htmlspecialchars($blog['imagen_url']) . '" class="img-fluid w-100" alt="Imagen de Blog">
                                 <div class="d2c_card_body">
-                                    <p class="mb-2">Diseño, Ilustraciones, UI/UX</p>
-                                    <h4 class="mb-2"><a href="#">Cómo hacer que un sitio web se vea más atractivo con imágenes NFT para el diseño.</a></h4>
-                                    <p class="mb-1">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas.</p>
+                                    <p class="mb-2">' . htmlspecialchars($blog['categoria']) . '</p>
+                                    <h4 class="mb-2"><a href="#">' . htmlspecialchars($blog['titulo']) . '</a></h4>
+                                    <p class="mb-1">' . htmlspecialchars($blog['descripcion']) . '</p>
                                     <div class="d2c_date">
-                                        <span>2, Sept 2025</span>
+                                        <span>' . $fecha_formateada . '</span>
                                         <a href="#"><i class="fas fa-share-alt"></i></a>
                                     </div>
-                                    <a href="https://mobirise.com/how-to/es/nft.html">Aprende Más <i class="fas fa-arrow-right"></i></a>
+                                    <a href="' . htmlspecialchars($blog['enlace_url']) . '" target="_blank" rel="noopener noreferrer">Aprende Más <i class="fas fa-arrow-right"></i></a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d2c_card_wrapper">
-                                <img src="./assets/images/blog_two.jpg" class="img-fluid w-100" alt="Imagen de Blog Dos">
-                                <div class="d2c_card_body">
-                                    <p class="mb-2">Diseño, Ilustraciones, UI/UX</p>
-                                    <h4 class="mb-2"><a href="#">Cómo hacer que un sitio web sea más seguro que otro con amenazas de seguridad avanzadas.</a></h4>
-                                    <p class="mb-1">Explora una selección curada de productos tecnológicos de vanguardia, elegidos a mano por nuestros expertos. Desde gadgets hasta software.</p>
-                                    <div class="d2c_date">
-                                        <span>9, Ago 2025</span>
-                                        <a href="#"><i class="fas fa-share-alt"></i></a>
-                                    </div>
-                                    <a href="https://mailchimp.com/es/resources/website-security/">Aprende Más <i class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                        </div>';
+                    }
+                } else {
+                    echo '<div class="col-12"><p class="text-center">No hay artículos de blog disponibles en este momento.</p></div>';
+                }
+                $conn->close();
+            }
+            ?>
+        </div>
+    </div>
+</section>
             <!-- sección de blog fin -->
     
             <!-- sección de testimonios inicio -->
@@ -462,31 +481,6 @@
             </section>
             <!-- sección de testimonios fin -->
         </div>
-    
-        <!-- sección de boletín inicio -->
-        <section class="d2c_newsletter_wrapper">
-            <div class="container">
-                <div class="d2c_card_wrapper">
-                    <h2 class="d2c_sub_title text_start text-md-center position-relative">Sé el primero en saber cuando <span>lancemos</span></h2>
-                    <p class="text_start text-md-center">Mantente al tanto de todo lo que necesitas saber.</p>
-                    <div class="row">
-                        <div class="col-12 col-lg-8 col-xl-6 offset-0 offset-lg-2 offset-xl-3">
-                            <form class="row needs-validation" novalidate>
-                                <div class="col-md-8">
-                                    <div class="input-group">
-                                        <input type="email" class="form-control" placeholder="Ingresa tu dirección de correo electrónico" aria-describedby="newsletter_btn" autocomplete="on" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <button class="btn" type="submit" id="newsletter_btn">ponte en contacto</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- sección de boletín fin -->
     
         <!-- Sección de Contacto Actualizada -->
 <section class="d2c_contact_wrapper" id="contact">
@@ -619,8 +613,149 @@
             </a>
         </div>
         <!--   Botón de Desplazamiento Fin   -->
+
+        <div class="chatbot-icon" id="chatbot-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+        <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+        <path d="M2.165 4.316c-.07.51-.113 1.036-.134 1.563C1.83 6.906 2.027 8.514 2.5 10a1.5 1.5 0 0 0 1.5 1.5c.23.013.458.058.683.124q.17.05.342.102c.385.127.784.212 1.19.274a11.1 11.1 0 0 0 2.656 0c.406-.062.805-.147 1.19-.274q.17-.05.342-.102c.225-.066.453-.111.683-.124a1.5 1.5 0 0 0 1.5-1.5c.473-1.486.67-3.094.545-4.471-.021-.527-.064-1.053-.134-1.563a.83.83 0 0 0-.256-.445.83.83 0 0 0-.445-.256C12.87 3.5 10.5 3.5 8 3.5c-2.5 0-4.87.058-6.105.328a.83.83 0 0 0-.445.256.83.83 0 0 0-.256.445zm-1.5 4.966c0 1.15.228 2.378.784 3.476C1.996 13.552 2.977 14 4.5 14c.484 0 .964-.085 1.417-.253.18-.067.36-.14.536-.219a11.09 11.09 0 0 0 4.194 0c.176.079.356.152.536.219.453.168.933.253 1.417.253 1.523 0 2.504-.448 2.816-1.579.556-1.098.784-2.326.784-3.476 0-1.137-.206-2.273-.62-3.32-.018-.043-.036-.086-.055-.128.847.669 1.197 1.543 1.255 2.193z"/>
+    </svg>
+</div>
+
+<div class="chatbot-window" id="chatbot-window">
+    <div class="chatbot-header">
+        <h4>Asistente Virtual TechStart</h4>
+        <span class="close-btn" id="close-chatbot">&times;</span>
+    </div>
+    <div class="chatbot-body" id="chatbot-body">
+        <div class="message bot-message">
+            ¡Hola! Soy tu asistente virtual de TechStart. ¿En qué puedo ayudarte hoy?
+        </div>
+    </div>
+    <div class="chatbot-footer">
+        <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje..." onkeypress="handleChatbotInput(event)">
+        <button id="chatbot-send-btn">Enviar</button>
+    </div>
+</div>
     </main>
     
+
+    <script>
+    // Referencias a elementos del DOM
+    const chatbotIcon = document.getElementById('chatbot-icon');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const closeChatbotBtn = document.getElementById('close-chatbot');
+    const chatbotBody = document.getElementById('chatbot-body');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSendBtn = document.getElementById('chatbot-send-btn');
+
+    // Función para abrir/cerrar la ventana del chatbot
+    chatbotIcon.addEventListener('click', () => {
+        chatbotWindow.classList.toggle('open');
+        if (chatbotWindow.classList.contains('open')) {
+            chatbotInput.focus(); // Enfoca el input al abrir
+            scrollToBottom(); // Asegura que se vea el último mensaje
+        }
+    });
+
+    closeChatbotBtn.addEventListener('click', () => {
+        chatbotWindow.classList.remove('open');
+    });
+
+    // Función para agregar un mensaje al cuerpo del chat
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', `${sender}-message`);
+        messageDiv.textContent = text;
+        chatbotBody.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    // Función para hacer scroll al final del chat
+    function scrollToBottom() {
+        chatbotBody.scrollTop = chatbotBody.scrollHeight;
+    }
+
+    // Respuestas predefinidas del chatbot (base de conocimientos)
+    const chatbotResponses = [
+        {
+            keywords: ["servicios", "ofrecen", "qué hacen"],
+            response: "Ofrecemos desarrollo web personalizado, diseño de aplicaciones móviles y soluciones de comercio electrónico. ¿Te gustaría saber más sobre alguno de ellos?"
+        },
+        {
+            keywords: ["web", "pagina web", "sitio web"],
+            response: "En desarrollo web, creamos sitios a medida, desde landing pages hasta plataformas complejas. Nos enfocamos en la experiencia de usuario y la optimización SEO."
+        },
+        {
+            keywords: ["moviles", "app", "aplicacion"],
+            response: "Desarrollamos aplicaciones móviles nativas para iOS y Android, así como apps híbridas. Nos especializamos en apps funcionales y con interfaces intuitivas."
+        },
+        {
+            keywords: ["comercio", "ecommerce", "tienda online"],
+            response: "Nuestras soluciones de comercio electrónico incluyen tiendas online seguras y escalables, integración con pasarelas de pago y gestión de inventario."
+        },
+        {
+            keywords: ["costo", "precio", "cuánto cuesta"],
+            response: "El costo de nuestros servicios varía según la complejidad y los requisitos específicos del proyecto. Te invitamos a usar nuestro formulario de contacto para solicitar una cotización personalizada y gratuita."
+        },
+        {
+            keywords: ["contacto", "hablar", "equipo"],
+            response: "Puedes contactarnos a través de nuestro formulario en la sección de 'Contáctanos' en esta misma página, o enviando un correo a info@techstart.com.mx."
+        },
+        {
+            keywords: ["hola", "saludo", "que tal"],
+            response: "¡Hola! ¿En qué puedo ayudarte con nuestros servicios?"
+        },
+        {
+            keywords: ["gracias", "ok", "vale"],
+            response: "De nada. Si tienes más preguntas, no dudes en preguntar."
+        },
+        {
+            keywords: ["ubicacion", "donde estan"],
+            response: "Somos una empresa digital y trabajamos de forma remota, lo que nos permite servir a clientes en cualquier parte. Si necesitas una reunión, podemos coordinarla virtualmente."
+        }
+        // Puedes añadir más preguntas y respuestas aquí
+    ];
+
+    // Función para obtener la respuesta del chatbot
+    function getChatbotResponse(userInput) {
+        const lowerCaseInput = userInput.toLowerCase();
+
+        for (const response of chatbotResponses) {
+            for (const keyword of response.keywords) {
+                if (lowerCaseInput.includes(keyword)) {
+                    return response.response;
+                }
+            }
+        }
+        return "Lo siento, no entendí tu pregunta. Por favor, intenta reformularla o pregunta algo más específico sobre nuestros servicios.";
+    }
+
+    // Función para enviar mensaje (al hacer clic en el botón o presionar Enter)
+    function sendMessage() {
+        const userInput = chatbotInput.value.trim();
+        if (userInput === "") return; // No enviar mensajes vacíos
+
+        addMessage(userInput, 'user');
+        chatbotInput.value = ''; // Limpiar el input
+
+        // Simular un pequeño retardo para la respuesta del bot
+        setTimeout(() => {
+            const botResponse = getChatbotResponse(userInput);
+            addMessage(botResponse, 'bot');
+        }, 500); // Retardo de 0.5 segundos
+    }
+
+    // Event Listeners para enviar mensaje
+    chatbotSendBtn.addEventListener('click', sendMessage);
+    
+    // Para enviar con Enter en el input
+    function handleChatbotInput(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
