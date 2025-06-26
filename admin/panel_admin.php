@@ -14,34 +14,59 @@ if (!isset($_SESSION['admin_logged']) || $_SESSION['admin_logged'] !== true) {
     exit();
 }
 
-$mensajes = []; // Para almacenar los mensajes
-$error_fetching_messages = '';
+// Inicializar arrays para almacenar datos
+$mensajes = [];
+$blogs = [];
+$error_fetching = ''; // Usaremos una sola variable para errores de conexión
 
 // Crear conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Verificar conexión
+// Verificar conexión y manejar el error si falla
 if ($conn->connect_error) {
     error_log("Error de conexión a la base de datos en panel_admin: " . $conn->connect_error);
-    $error_fetching_messages = "Error al cargar los mensajes: no se pudo conectar a la base de datos.";
+    $error_fetching = "Error al conectar a la base de datos. No se pudieron cargar los datos.";
 } else {
+    // --- LÓGICA PARA CARGAR MENSAJES DE CONTACTO ---
     // Consulta para obtener los mensajes de la tabla 'contactos'
-    // ¡IMPORTANTE! Ahora necesitamos el 'id' del mensaje para poder eliminarlo.
-    $sql = "SELECT id, primer_nombre, apellido, direccion_correo, numero_telefono, mensaje, fecha_envio FROM contactos ORDER BY fecha_envio DESC";
-    $result = $conn->query($sql);
+    $sql_mensajes = "SELECT id, primer_nombre, apellido, direccion_correo, numero_telefono, mensaje, fecha_envio FROM contactos ORDER BY fecha_envio DESC";
+    $result_mensajes = $conn->query($sql_mensajes);
 
-    if ($result) {
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $mensajes[] = $row;
+    if ($result_mensajes) {
+        if ($result_mensajes->num_rows > 0) {
+            while($row_mensaje = $result_mensajes->fetch_assoc()) {
+                $mensajes[] = $row_mensaje;
             }
-        } else {
-            $error_fetching_messages = "No hay mensajes de contacto aún.";
         }
     } else {
-        error_log("Error al obtener mensajes de la base de datos: " . $conn->error);
-        $error_fetching_messages = "Error al cargar los mensajes. Por favor, inténtalo de nuevo más tarde.";
+        // En caso de error en la consulta, no en la conexión
+        error_log("Error al obtener mensajes: " . $conn->error);
+        $error_fetching = "Error al cargar los mensajes. Por favor, inténtalo de nuevo más tarde.";
     }
+
+    // --- LÓGICA PARA CARGAR ARTÍCULOS DEL BLOG ---
+    // Consulta para obtener los blogs
+    $sql_blogs = "SELECT id, titulo, fecha FROM blogs ORDER BY fecha DESC";
+    $result_blogs = $conn->query($sql_blogs);
+
+    if ($result_blogs) {
+        if ($result_blogs->num_rows > 0) {
+            while($row_blog = $result_blogs->fetch_assoc()) {
+                $blogs[] = $row_blog;
+            }
+        }
+    } else {
+        // En caso de error en la consulta
+        error_log("Error al obtener blogs: " . $conn->error);
+        // Si ya hay un error, lo concatenamos
+        if (empty($error_fetching)) {
+            $error_fetching = "Error al cargar los artículos del blog. Por favor, inténtalo de nuevo más tarde.";
+        } else {
+            $error_fetching .= " También hubo un error al cargar los artículos del blog.";
+        }
+    }
+    
+    // Al final de todas las consultas, cerrar la conexión.
     $conn->close();
 }
 ?>
@@ -214,8 +239,92 @@ if ($conn->connect_error) {
             <?php endif; ?>
         </div>
 
+        <div class="container messages-container mt-5">
+    <h2>Gestión de Artículos del Blog</h2>
+
+    <div id="blog-message-container" class="alert-container"></div>
+
+    <?php if (!empty($error_fetching_blogs)): ?>
+        <div class="alert alert-warning" role="alert">
+            <?php echo $error_fetching_blogs; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($blogs)): ?>
+        <ul class="list-group">
+        <?php foreach ($blogs as $blog): ?>
+            <li class="list-group-item d-flex justify-content-between align-items-center" id="blog-<?php echo $blog['id']; ?>">
+                <div>
+                    <strong><?php echo htmlspecialchars($blog['titulo']); ?></strong>
+                    <small class="text-muted ms-3"><?php echo date('d/m/Y', strtotime($blog['fecha'])); ?></small>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm edit-blog-btn me-2" data-id="<?php echo $blog['id']; ?>">Editar</button>
+                    <button class="btn btn-danger btn-sm delete-blog-btn" data-id="<?php echo $blog['id']; ?>">Eliminar</button>
+                </div>
+            </li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</div>
+
         <a href="logout.php" class="btn btn-danger logout-link">Cerrar Sesión</a>
     </main>
+
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... (Tu código JS existente para eliminar mensajes de contacto) ...
+
+        // --- Lógica para la gestión de blogs ---
+        const blogList = document.querySelector('.list-group'); // Asume que la lista de blogs tiene la clase .list-group
+        const blogMessageContainer = document.getElementById('blog-message-container');
+
+        blogList.addEventListener('click', function(event) {
+            const target = event.target;
+            const blogId = target.dataset.id;
+
+            if (target.classList.contains('edit-blog-btn')) {
+                // Redirigir a una página de edición (la crearemos en el siguiente paso)
+                window.location.href = 'editar_blog.php?id=' + blogId;
+            } else if (target.classList.contains('delete-blog-btn')) {
+                if (confirm('¿Estás seguro de que quieres eliminar este artículo del blog?')) {
+                    // Lógica de eliminación AJAX para blogs (similar a la de los mensajes)
+                    fetch('eliminar_blog.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + blogId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('blog-' + blogId).remove();
+                            displayBlogAlert('Artículo de blog eliminado correctamente.', 'success');
+                        } else {
+                            displayBlogAlert('Error al eliminar el artículo: ' + data.message, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        displayBlogAlert('Error de conexión al intentar eliminar el artículo.', 'danger');
+                    });
+                }
+            }
+        });
+
+        function displayBlogAlert(message, type) {
+            blogMessageContainer.innerHTML = `<div class="alert alert-<span class="math-inline">\{type\} alert\-dismissible fade show" role\="alert"\></span>{message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+            setTimeout(() => {
+                const alertElement = blogMessageContainer.querySelector('.alert');
+                if (alertElement) {
+                     const bsAlert = bootstrap.Alert.getInstance(alertElement);
+                     if (bsAlert) { bsAlert.dispose(); } else { new bootstrap.Alert(alertElement).close(); }
+                }
+            }, 5000);
+        }
+    });
+</script>
 
     <script src="../lib/bootstrap-5/js/bootstrap.bundle.min.js"></script>
     <script>

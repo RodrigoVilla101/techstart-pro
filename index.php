@@ -44,7 +44,7 @@
             <!-- barra de navegación -->
             <nav class="navbar navbar-expand-lg px-0 py-0" id="d2c_main_nav">
                 <!-- logo -->
-                <a class="navbar-brand" href="./index.html"><img src="./assets/images/logo.png" class="w-100" alt="Logo"></a>
+                <a class="navbar-brand" href="./index.php"><img src="./assets/images/logo.png" class="w-100" alt="Logo"></a>
                 <!-- logo -->
                 <!-- hamburguesa -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -386,47 +386,64 @@
             <!-- sección de portafolio fin -->
         </div>
     
-        <div class="d2c_blog_bg_wrapper">
-            <!-- sección de blog inicio -->
-            <section class="d2c_blog_wrapper" id="blog">
-                <div class="container">
-                    <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestro <span>Blog</span></h3>
-                    <h2 class="d2c_title text_start text-md-center position-relative">Últimas noticias y <span>artículos</span></h2>
-                    <p class="text_start text-md-center">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas. Mantente informado y amplía tu conocimiento tecnológico con nuestro contenido perspicaz.</p>
-                    <div class="row">
+<section class="d2c_blog_wrapper" id="blog">
+    <div class="container">
+        <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestro <span>Blog</span></h3>
+        <h2 class="d2c_title text_start text-md-center position-relative">Últimas noticias y <span>artículos</span></h2>
+        <p class="text_start text-md-center">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas. Mantente informado y amplía tu conocimiento tecnológico con nuestro contenido perspicaz.</p>
+        <div class="row">
+          
+<?php
+  
+            // Configuración de la base de datos
+            $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "techstart_db";
+            
+            // Crear conexión
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            // Verificar conexión
+            if ($conn->connect_error) {
+                // Si hay un error, muestra un mensaje de error o los blogs estáticos
+                echo '<div class="col-12"><p class="text-center text-danger">Error al cargar el blog. Por favor, inténtalo de nuevo más tarde.</p></div>';
+            } else {
+                // Consulta para obtener los blogs (puedes limitar la cantidad si quieres, por ejemplo, LIMIT 2)
+                $sql = "SELECT id, categoria, titulo, descripcion, imagen_url, fecha, enlace_url FROM blogs ORDER BY fecha DESC";
+                $result = $conn->query($sql);
+
+                if ($result && $result->num_rows > 0) {
+                    while($blog = $result->fetch_assoc()) {
+                        // Formatear la fecha
+                        $fecha_formateada = date('j, M Y', strtotime($blog['fecha']));
+                        // Muestra el código HTML para cada blog
+                        echo '
                         <div class="col-lg-6 mb-4 mb-lg-0">
                             <div class="d2c_card_wrapper d2c_blog_card">
-                                <img src="./assets/images/blog_one.jpg" class="img-fluid w-100" alt="Imagen de Blog Uno">
+                                <img src="' . htmlspecialchars($blog['imagen_url']) . '" class="img-fluid w-100" alt="Imagen de Blog">
                                 <div class="d2c_card_body">
-                                    <p class="mb-2">Diseño, Ilustraciones, UI/UX</p>
-                                    <h4 class="mb-2"><a href="#">Cómo hacer que un sitio web se vea más atractivo con imágenes NFT para el diseño.</a></h4>
-                                    <p class="mb-1">Sumérgete en nuestro blog tecnológico integral, donde compartimos artículos detallados, guías prácticas y análisis sobre las últimas tendencias tecnológicas.</p>
+                                    <p class="mb-2">' . htmlspecialchars($blog['categoria']) . '</p>
+                                    <h4 class="mb-2"><a href="#">' . htmlspecialchars($blog['titulo']) . '</a></h4>
+                                    <p class="mb-1">' . htmlspecialchars($blog['descripcion']) . '</p>
                                     <div class="d2c_date">
-                                        <span>2, Sept 2025</span>
+                                        <span>' . $fecha_formateada . '</span>
                                         <a href="#"><i class="fas fa-share-alt"></i></a>
                                     </div>
-                                    <a href="https://mobirise.com/how-to/es/nft.html">Aprende Más <i class="fas fa-arrow-right"></i></a>
+                                    <a href="' . htmlspecialchars($blog['enlace_url']) . '" target="_blank" rel="noopener noreferrer">Aprende Más <i class="fas fa-arrow-right"></i></a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="d2c_card_wrapper">
-                                <img src="./assets/images/blog_two.jpg" class="img-fluid w-100" alt="Imagen de Blog Dos">
-                                <div class="d2c_card_body">
-                                    <p class="mb-2">Diseño, Ilustraciones, UI/UX</p>
-                                    <h4 class="mb-2"><a href="#">Cómo hacer que un sitio web sea más seguro que otro con amenazas de seguridad avanzadas.</a></h4>
-                                    <p class="mb-1">Explora una selección curada de productos tecnológicos de vanguardia, elegidos a mano por nuestros expertos. Desde gadgets hasta software.</p>
-                                    <div class="d2c_date">
-                                        <span>9, Ago 2025</span>
-                                        <a href="#"><i class="fas fa-share-alt"></i></a>
-                                    </div>
-                                    <a href="https://mailchimp.com/es/resources/website-security/">Aprende Más <i class="fas fa-arrow-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                        </div>';
+                    }
+                } else {
+                    echo '<div class="col-12"><p class="text-center">No hay artículos de blog disponibles en este momento.</p></div>';
+                }
+                $conn->close();
+            }
+            ?>
+        </div>
+    </div>
+</section>
             <!-- sección de blog fin -->
     
             <!-- sección de testimonios inicio -->
