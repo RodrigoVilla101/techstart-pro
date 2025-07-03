@@ -4,11 +4,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Etiqueta Meta OG -->
-    <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="TechStart Pro - Página de destino responsive con Bootstrap">
-    <meta property="og:description" content="La página de destino de TechStart Pro es la solución definitiva para empresas e individuos que buscan una presencia en línea de primer nivel. Esta página de destino responsive con Bootstrap no solo es atractiva, sino también simple.">
-    <meta property="og:image" content="https://www.designtocodes.com/wp-content/uploads/2023/08/TechStart-Pro-Responsive-Bootstrap-Landing-Page.jpg/">
+    
     <!-- título -->
     <title>Tech Start Pro</title>
     <!-- favicon -->
@@ -32,11 +28,7 @@
     <link rel="stylesheet" href="./assets/css/responsive.css">
 </head>
 <body>
-    <!--  preloader inicio  -->
-    <div class="preloader">
-        <img src="./assets/images/logo.png" alt="Logo del Preloader">
-    </div>
-    <!--  preloader fin  -->
+
 
     <!-- cabecera inicio -->
     <header class="d2c_navbar sticky-top">
@@ -82,7 +74,7 @@
                         
                     </ul>
                 </div>
-                <a href="http://localhost/TECHSTART-PRO/admin/admin.html" class="btn d-none d-lg-block">ADMINISTRACION</a>
+                <a href="./admin/admin.html" class="btn d-none d-lg-block">ADMINISTRACION</a>
                 <!-- elementos de navegación -->
             </nav>
             <!-- barra de navegación -->
