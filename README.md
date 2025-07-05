@@ -2,7 +2,7 @@
 
 
 # TechStart Pro - README Mejorado
-- **Link de la pagina TechStart-Pro**: [](https://techstart-pro.infinityfreeapp.com/)
+- **Link de la pagina TechStart-Pro**: [Pagina](https://techstart-pro.infinityfreeapp.com/)
 ## 🚀 TechStart Pro
 
 Una plataforma web completa de servicios tecnológicos desarrollada como proyecto académico para la Universidad Tecnológica de Aguascalientes. TechStart Pro combina una interfaz pública para mostrar servicios tecnológicos con un sistema administrativo robusto para la gestión de contenido.
