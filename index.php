@@ -4,11 +4,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Etiqueta Meta OG -->
-    <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="TechStart Pro - Página de destino responsive con Bootstrap">
-    <meta property="og:description" content="La página de destino de TechStart Pro es la solución definitiva para empresas e individuos que buscan una presencia en línea de primer nivel. Esta página de destino responsive con Bootstrap no solo es atractiva, sino también simple.">
-    <meta property="og:image" content="https://www.designtocodes.com/wp-content/uploads/2023/08/TechStart-Pro-Responsive-Bootstrap-Landing-Page.jpg/">
+    
     <!-- título -->
     <title>Tech Start Pro</title>
     <!-- favicon -->
@@ -32,11 +28,7 @@
     <link rel="stylesheet" href="./assets/css/responsive.css">
 </head>
 <body>
-    <!--  preloader inicio  -->
-    <div class="preloader">
-        <img src="./assets/images/logo.png" alt="Logo del Preloader">
-    </div>
-    <!--  preloader fin  -->
+
 
     <!-- cabecera inicio -->
     <header class="d2c_navbar sticky-top">
@@ -82,7 +74,7 @@
                         
                     </ul>
                 </div>
-                <a href="http://localhost/TECHSTART-PRO/admin/admin.html" class="btn d-none d-lg-block">ADMINISTRACION</a>
+                <a href="./admin/admin.html" class="btn d-none d-lg-block">ADMINISTRACION</a>
                 <!-- elementos de navegación -->
             </nav>
             <!-- barra de navegación -->
@@ -446,42 +438,37 @@
 </section>
             <!-- sección de blog fin -->
     
-            <!-- sección de testimonios inicio -->
-            <section class="d2c_testimonial_wrapper" id="testimonial">
-                <div class="container">
-                    <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestros <span>Testimonios</span></h3>
-                    <h2 class="d2c_title text_start text-md-center position-relative">aquí hay algunos comentarios de clientes<span></span></h2>
-                    <div class="row testimonial_slider">
-                        <div class="col">
-                            <div class="d2c_card_wrapper text-center">
-                                <h5>Tanahair es el servicio más amigable y eficiente que he usado. Todo el proceso lleva tiempo para presentar el producto y, como resultado, solo se presentan las mejores oportunidades que realmente se adaptan a ti.</h5>
-                                <img src="./assets/images/testimonial_one.jpg" class="img-fluid mb-2" alt="Testimonio Uno">
-                                <h3 class="mb-2"><span>Darren Dunlap</span></h3>
-                                <p class="mb-0">CEO & Fundador en Flex.co</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d2c_card_wrapper text-center">
-                                <h5>Tanahair es el servicio más amigable y eficiente que he usado. Todo el proceso lleva tiempo para presentar el producto y, como resultado, solo se presentan las mejores oportunidades que realmente se adaptan a ti.</h5>
-                                <img src="./assets/images/testimonial_one.jpg" class="img-fluid mb-2" alt="Testimonio Uno">
-                                <h3 class="mb-2"><span>Darren Dunlap</span></h3>
-                                <p class="mb-0">CEO & Fundador en Flex.co</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d2c_card_wrapper text-center">
-                                <h5>Tanahair es el servicio más amigable y eficiente que he usado. Todo el proceso lleva tiempo para presentar el producto y, como resultado, solo se presentan las mejores oportunidades que realmente se adaptan a ti.</h5>
-                                <img src="./assets/images/testimonial_one.jpg" class="img-fluid mb-2" alt="Testimonio Uno">
-                                <h3 class="mb-2"><span>Darren Dunlap</span></h3>
-                                <p class="mb-0">CEO & Fundador en Flex.co</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!-- sección de testimonios fin -->
+<!-- Sección de testimonios con API dinámica -->
+<section class="d2c_testimonial_wrapper" id="testimonial">
+    <div class="container">
+        <h3 class="d2c_sub_title text_start text-md-center position-relative">Nuestros <span>Testimonios</span></h3>
+        <h2 class="d2c_title text_start text-md-center position-relative">aquí hay algunos comentarios de clientes<span></span></h2>
+        
+        <!-- Indicador de carga -->
+        <div id="testimonials-loading" class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando testimonios...</span>
+            </div>
+            <p class="mt-2">Cargando testimonios...</p>
         </div>
-    
+
+        <!-- Contenedor de testimonios -->
+        <div class="row testimonial_slider" id="testimonials-container" style="display: none;">
+            <!-- Los testimonios se cargarán dinámicamente aquí -->
+        </div>
+
+        <!-- Mensaje de error (oculto por defecto) -->
+        <div id="testimonials-error" class="text-center my-5" style="display: none;">
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Error al cargar testimonios.</strong> Mostrando testimonios por defecto.
+            </div>
+        </div>
+    </div>
+</section>
+        </div>
+        <!-- sección de testimonios fin -->
+
         <!-- Sección de Contacto Actualizada -->
 <section class="d2c_contact_wrapper" id="contact">
         <div class="container">
@@ -823,6 +810,186 @@
             }
         })();
     </script>
+
+
+
+
+<script>
+// Función para cargar testimonios desde API
+async function loadTestimonials() {
+    const loadingElement = document.getElementById('testimonials-loading');
+    const containerElement = document.getElementById('testimonials-container');
+    const errorElement = document.getElementById('testimonials-error');
+
+    try {
+        // Opción 1: Usar JSONPlaceholder (API gratuita real)
+        const response = await fetch('https://jsonplaceholder.typicode.com/users');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const users = await response.json();
+        
+        // Seleccionar solo los primeros 4 usuarios para testimonios
+        const selectedUsers = users.slice(0, 4);
+        
+        // Testimonios predefinidos para combinar con datos de usuarios reales
+        const testimonialTexts = [
+            "TechStart Pro transformó completamente nuestro negocio digital. Su equipo de desarrollo web creó una plataforma increíble que superó todas nuestras expectativas. La experiencia de usuario es excepcional.",
+            "El servicio de consultoría tecnológica de TechStart Pro fue fundamental para modernizar nuestra infraestructura. Su enfoque profesional y conocimiento técnico nos ayudó a alcanzar nuestros objetivos.",
+            "Trabajar con TechStart Pro fue una experiencia fantástica. Su equipo de desarrollo móvil creó una aplicación que nuestros clientes adoran. La calidad del código y la atención al detalle son impresionantes.",
+            "La solución de comercio electrónico que desarrolló TechStart Pro aumentó nuestras ventas en un 200%. Su experiencia en desarrollo web y optimización SEO fue clave para nuestro éxito."
+        ];
+
+        const jobTitles = [
+            "CEO & Fundador en TechCorp",
+            "Directora de Marketing en StartupXYZ",
+            "CTO en InnovateLab",
+            "Gerente de Producto en DigitalSolutions"
+        ];
+
+        // Limpiar el contenedor
+        containerElement.innerHTML = '';
+
+        // Crear testimonios dinámicos
+        selectedUsers.forEach((user, index) => {
+            const testimonialHTML = `
+                <div class="col">
+                    <div class="d2c_card_wrapper text-center">
+                        <h5>${testimonialTexts[index]}</h5>
+                        <img src="https://picsum.photos/80/80?random=${user.id}" class="img-fluid mb-2 rounded-circle" alt="Testimonio ${user.name}" style="width: 80px; height: 80px; object-fit: cover;">
+                        <h3 class="mb-2"><span>${user.name}</span></h3>
+                        <p class="mb-0">${jobTitles[index]}</p>
+                    </div>
+                </div>
+            `;
+            containerElement.innerHTML += testimonialHTML;
+        });
+
+        // Ocultar loading y mostrar testimonios
+        loadingElement.style.display = 'none';
+        containerElement.style.display = 'block';
+
+        // Inicializar el slider de Slick después de cargar los testimonios
+        initializeTestimonialSlider();
+
+    } catch (error) {
+        console.error('Error al cargar testimonios:', error);
+        
+        // En caso de error, mostrar testimonios por defecto
+        loadDefaultTestimonials();
+        
+        // Mostrar mensaje de error
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    }
+}
+
+// Función para cargar testimonios por defecto en caso de error
+function loadDefaultTestimonials() {
+    const loadingElement = document.getElementById('testimonials-loading');
+    const containerElement = document.getElementById('testimonials-container');
+
+    const defaultTestimonials = [
+        {
+            text: "TechStart Pro es el servicio más profesional y eficiente que he utilizado. Su equipo de desarrollo web creó una solución perfecta que se adapta exactamente a nuestras necesidades empresariales.",
+            image: "https://picsum.photos/80/80?random=1",
+            name: "María González",
+            position: "CEO & Fundadora en TechVision"
+        },
+        {
+            text: "El servicio de consultoría tecnológica de TechStart Pro superó nuestras expectativas. Su experiencia y profesionalismo nos ayudaron a digitalizar nuestros procesos de manera exitosa.",
+            image: "https://picsum.photos/80/80?random=2",
+            name: "Carlos Rodríguez",
+            position: "Director de IT en InnovaCorp"
+        },
+        {
+            text: "Trabajar con TechStart Pro fue una experiencia excepcional. Su equipo de desarrollo móvil creó una aplicación que nuestros usuarios aman. La calidad y atención al detalle son impresionantes.",
+            image: "https://picsum.photos/80/80?random=3",
+            name: "Ana Martínez",
+            position: "Gerente de Producto en AppSolutions"
+        },
+        {
+            text: "La solución de comercio electrónico desarrollada por TechStart Pro transformó nuestro negocio. Su experiencia en desarrollo web y optimización nos ayudó a crecer exponencialmente.",
+            image: "https://picsum.photos/80/80?random=4",
+            name: "Luis Fernández",
+            position: "Fundador en EcommercePro"
+        }
+    ];
+
+    // Limpiar el contenedor
+    containerElement.innerHTML = '';
+
+    // Crear testimonios por defecto
+    defaultTestimonials.forEach((testimonial, index) => {
+        const testimonialHTML = `
+            <div class="col">
+                <div class="d2c_card_wrapper text-center">
+                    <h5>${testimonial.text}</h5>
+                    <img src="${testimonial.image}" class="img-fluid mb-2 rounded-circle" alt="Testimonio ${testimonial.name}" style="width: 80px; height: 80px; object-fit: cover;">
+                    <h3 class="mb-2"><span>${testimonial.name}</span></h3>
+                    <p class="mb-0">${testimonial.position}</p>
+                </div>
+            </div>
+        `;
+        containerElement.innerHTML += testimonialHTML;
+    });
+
+    // Ocultar loading y mostrar testimonios
+    loadingElement.style.display = 'none';
+    containerElement.style.display = 'block';
+
+    // Inicializar el slider
+    initializeTestimonialSlider();
+}
+
+// Función para inicializar el slider de testimonios
+function initializeTestimonialSlider() {
+    // Verificar si Slick está disponible
+    if (typeof $.fn.slick !== 'undefined') {
+        // Destruir slider existente si existe
+        if ($('.testimonial_slider').hasClass('slick-initialized')) {
+            $('.testimonial_slider').slick('unslick');
+        }
+        
+        // Inicializar nuevo slider
+        $('.testimonial_slider').slick({
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 5000,
+            arrows: false,
+            dots: true,
+            pauseOnHover: true,
+            responsive: [
+                {
+                    breakpoint: 992,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                }
+            ]
+        });
+    } else {
+        console.warn('Slick slider no está disponible');
+    }
+}
+// Cargar testimonios al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    loadTestimonials();
+});
 
 </script>
     </script>
